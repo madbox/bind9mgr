@@ -1,5 +1,8 @@
 = bind9mgr
 
+https://github.com/madbox/bind9mgr
+https://rubygems.org/gems/bind9mgr
+
 == DESCRIPTION:
 
 This gem contains some classes to manage bind9 zone files
