@@ -1,0 +1,16 @@
+.autotest
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/bind9mgr
+lib/bind9mgr.rb
+lib/named_conf.rb
+lib/zone.rb
+lib/parser.rb
+lib/resource_record.rb
+spec/named_conf_spec.rb
+spec/zone_spec.rb
+spec/spec_helper.rb
+spec/parser_spec.rb
+spec/resource_record_spec.rb
