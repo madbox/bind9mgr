@@ -8,6 +8,9 @@ This gem contains some classes to manage bind9 zone files
 
 Please look into specs
 
+TODO: more configuration features
+TODO: more conventions(feedback welcomed!)
+
 == SYNOPSIS:
 
   bc = Bind9mgr::NamedConf.new( '/etc/bind/named.conf.local',
@@ -20,6 +23,9 @@ Please look into specs
   bc.zones # => [ existing zones ... Bind9mgr::Zone ]
   bc.zones.first.records # => [ records ... Bind9mgr::ResourceRecord ]
   
+  bc.add_zone('y_a_zone.org') # adds zone entry with default params
+  bc.write_all # rewrites named.conf.local and zone db files (in /etc/bind/zones_db.)
+  bc.del_zone!('y_a_zone.org') # immidiately removes db file and zone entry in named.conf.local 
 
 == REQUIREMENTS:
 
