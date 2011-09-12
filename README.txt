@@ -6,10 +6,20 @@ This gem contains some classes to manage bind9 zone files
 
 == FEATURES/PROBLEMS:
 
-Please look into specs
+Features:
+* zone db file parseing
+* named.conf simple parser
+* OO data organization
+* Simple verifications
+* add zone intaeface
+* delete zone interface
+* automatic zone options management (origin, default NS, default A, "www" CNAME etc)
+
+Please look into specs for more detailed info.
 
 TODO: more configuration features
 TODO: more conventions(feedback welcomed!)
+TODO: xml mappings for restful APIs
 
 == SYNOPSIS:
 
