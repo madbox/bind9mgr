@@ -65,6 +65,9 @@ alias1  	IN	CNAME	ns
     File.stub(:read).with("testfile.conf").and_return(@test_conf_content)
     File.stub(:read).with("testdomain.com.db").and_return(@test_db_content)
 
+    File.stub(:open).with(anything(),anything()).and_return(true)
+    Dir.stub(:mkdir).with(anything()).and_return(true)
+
     @nc = Bind9mgr::NamedConf.new
     @nc.file = 'testfile.conf'
     @nc.bind_location = ''
@@ -77,6 +80,18 @@ alias1  	IN	CNAME	ns
 
   it "should be creatable" do
     expect { Bind9mgr::NamedConf.new }.to_not raise_error
+  end
+
+  it "should fill zone parametrs after add" do
+    @nc.add_zone "example.com"
+    @nc.zones.last.options[:main_ns].should eql("ns1.example.com")
+  end
+
+  it "should update undefined zone options on write" do
+    Bind9mgr::Zone.any_instance.stub(:write_db_file)
+    @nc.zones << Bind9mgr::Zone.new("emptyzone.com")
+    @nc.write_zones
+    @nc.zones.last.options[:main_ns].should eql("ns1.example.com")
   end
 
   it "should fail to add_zone(some_string) unless bind_location filled" do

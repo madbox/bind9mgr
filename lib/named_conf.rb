@@ -66,9 +66,16 @@ module Bind9mgr
 
     def write_zones
       @zones.uniq.each do |z| 
-        z.file ||= gen_zone_file_name;
-        zones_subdir = File.dirname(z.file)
+        z.file ||= gen_zone_file_name( z.origin );
+        zones_subdir = File.dirname( z.file )
         Dir.mkdir( zones_subdir ) unless File.exists?( zones_subdir )
+
+        # OPTIMIZE this
+        z.options[:main_ns]        ||= @main_ns
+        z.options[:secondary_ns]   ||= @secondary_ns
+        z.options[:support_email]  ||= @support_email
+        z.options[:main_server_ip] ||= @main_server_ip
+
         z.write_db_file
       end if @zones.size > 0
     end
