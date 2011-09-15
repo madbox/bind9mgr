@@ -29,6 +29,18 @@ zone "1.168.192.in-addr.arpa" {
 };
 }
 
+    @test_wrong_conf_content = %q{// test file
+zone "cloud.ru" {
+	type master;
+	file "there_is_no_such_file.com.db";
+};
+
+zone "1.168.192.in-addr.arpa" {
+	type master;
+	file "testdomain.com.db";
+};
+}
+
     @test_db_content = %q{$ORIGIN testdomain.com.
 $TTL 86400 ; 1 day
 @	IN	SOA	testdomain.com. admin@testdomain.com. (
@@ -49,6 +61,7 @@ alias1  	IN	CNAME	ns
     File.stub(:exists?).with("testfile.conf").and_return(true)
     File.stub(:exists?).with("testdomain.com.db").and_return(true)
 
+    File.stub(:read).with(anything()).and_raise(Errno::ENOENT.new("File.read stubbed. You trying to read unexpected file."))
     File.stub(:read).with("testfile.conf").and_return(@test_conf_content)
     File.stub(:read).with("testdomain.com.db").and_return(@test_db_content)
 
@@ -117,6 +130,14 @@ alias1  	IN	CNAME	ns
     @nc.zones.should be_empty()
   end
 
+  it "should raise error if you try to assign non-String object to file" do
+    expect{ @nc.file = nil }.to raise_error(ArgumentError)
+    expect{ @nc.file = 1 }.to raise_error(ArgumentError)
+    expect{ @nc.file = '' }.not_to raise_error(ArgumentError)
+    expect{ @nc.file = 'qwe' }.not_to raise_error(ArgumentError)
+  end
+
+
   it "should have an empty array of zones on instantiation without conf file" do
     nc = Bind9mgr::NamedConf.new
     nc.zones.should be_empty()
@@ -144,4 +165,24 @@ alias1  	IN	CNAME	ns
   pending "should automatically generate file name for zone db if not supplied"
   pending "should automatically make dir for zone db files"
   pending "should have methods to edit SOA values"
+
+  it "'load!' should raise error if named conf file is missing" do
+    @nc.file = "missing.file"
+    expect{ @nc.load! }.to raise_error
+  end
+
+  it "'load' should not raise error if named conf file is missing" do
+    @nc.file = "missing.file"
+    expect{ @nc.load }.not_to raise_error
+  end
+
+  it "should not fail to load configuration when there is no zone db file" do
+    # named conf file with not existing zone db file
+    File.stub(:exists?).with("testwrongfile.conf").and_return(true)
+    File.stub(:read).with("testwrongfile.conf").and_return(@test_wrong_conf_content) 
+    @nc.file = "testwrongfile.conf"
+
+    expect{ @nc.load }.not_to raise_error
+    expect{ @nc.load_with_zones }.not_to raise_error
+  end
 end

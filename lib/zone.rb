@@ -49,41 +49,17 @@ module Bind9mgr
 
     def load
       raise ArgumentError, "file not specified" unless @file
+     
+      
+      # TODO what should we do if there is no db file?
+      # raise ArgumentError, "File: #{file} not found." unless File.exists?( @file )
+      # just emulate parsing of empty file
+      return 0 unless File.exists?( @file )
       
       p = Parser.new
       p.result = self
-      raise ArgumentError, "File: #{file} not found." unless File.exists?( @file )
       p.parse File.read( @file )
     end
-
-    # def parse content
-    #   clear_records
-    #   content.gsub!(/^\s+\n/, '')
-
-    #   # find and remove SOA record with its comments
-    #   soa = /([^\s]*?)\s+?(\d+?)?\s*?(#{RRClasses.join('|')})\s*?(SOA)\s+(.*?\).*?)\n/m
-    #   arr = content.match(soa).to_a
-    #   arr.shift
-    #   @records['SOA'].push arr
-    #   content.sub! soa, ''
-
-    #   # remove comments and blank lines
-    #   content.gsub!(/;.*$/, '')
-    #   content.gsub!(/^\s+\n/, '')
-      
-    #   # other @Records
-    #   rr = /^([^\s]+)\s+?(\d+?)?\s*?(#{RRClasses.join('|')})?\s*?(#{RRTypes.join('|')})\s+(.*?)$/
-    #   content.lines.each do |l|
-    #     if md = l.match(/\$TTL\s+(\d+)/)
-    #       ( @default_ttl = md[1].to_i ) if md[1].to_i > 0
-    #     elsif md = l.match(rr)
-    #       tmp_a = md.to_a
-    #       tmp_a.shift
-    #       @records[tmp_a[3]].push tmp_a
-    #     end
-    #   end
-    #   @records
-    # end
 
     def gen_db_content
       initialized?

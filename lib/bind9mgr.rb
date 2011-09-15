@@ -6,9 +6,9 @@ require File.join( File.dirname(__FILE__), 'resource_record' )
 require File.join( File.dirname(__FILE__), 'parser' )
 
 module Bind9mgr
-  VERSION = '0.2.4'
+  VERSION = '0.2.6'
 
-  ZONES_BIND_SUBDIR = 'zones_db'
+  ZONES_BIND_SUBDIR = 'primary'
 
   KLASSES = %w{IN CH}
   ALLOWED_TYPES = %w{A CNAME MX TXT PTR NS SRV SOA}

@@ -1,6 +1,7 @@
 module Bind9mgr
   # You can specify bind_location. If you do so then .add_zone method
   # will generate zones with right filenames.
+  # If .file
   class NamedConf
     #    BIND_PATH = '/etc/bind'
     #    BIND_DB_PATH = BIND_PATH + '/master'
@@ -13,15 +14,26 @@ module Bind9mgr
       @bind_location = File.dirname(file) if file.length > 1
       load
     end
-    
+
+    def file= str
+      raise ArgumentError, "String expected" unless str.kind_of? String
+      @file = str
+    end
+
+    # Tries to load data from named conf. Raises exception if file missing.
+    def load!
+      init_zones
+      parse File.read( @file ) if file.length > 0
+    end
+
+    # Tries to load data from named conf. Do nothing if file missing.
     def load
       init_zones
-      parse File.read( File.join( @file )) if File.exists? file
+      parse File.read( @file ) if File.exists?(@file)
     end
 
     def load_with_zones
-      init_zones
-      parse File.read( File.join( @file )) if File.exists? file
+      load
       zones.each{ |z| z.load}
     end
 
