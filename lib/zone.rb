@@ -126,9 +126,8 @@ zone "#{name}" {
       @records = []
     end
 
-    private
-
     def ensure_soa_rr record
+      raise ArgumentError, "record expected to be Bind9mgr::ResourceRecord" unless record.kind_of? ResourceRecord
       cnt = @records.select{ |r| r.type == 'SOA' }.count
       raise RuntimeError, "Multiple SOA detected. zone:#{@origin}" if cnt > 1
       return false if cnt == 1
@@ -137,6 +136,7 @@ zone "#{name}" {
     end
 
     def ensure_rr record
+      raise ArgumentError, "record expected to be Bind9mgr::ResourceRecord" unless record.kind_of? ResourceRecord
       max_rr_cnt = (record.type == 'NS' ? 2 : 1)
       cnt = @records.select{ |rr| (rr.owner == record.owner) && (rr.type == record.type) }.count
       raise RuntimeError, "Multiple rr with same owner+type detected. zone:#{@origin}" if cnt > max_rr_cnt
@@ -144,6 +144,8 @@ zone "#{name}" {
       @records.push record
       true
     end
+
+    private
 
     def default_soa
       initialized?
