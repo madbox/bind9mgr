@@ -8,3 +8,12 @@
 
 * don't fail if there is missing zone db files
 * specs update
+
+=== 0.2.7 / 2011-09-16
+
+* bugfix release
+
+=== 0.2.8 / 2011-09-17
+
+* Bind9mgr::NamedConf#load_one( zone_name ) method added
+* specs update

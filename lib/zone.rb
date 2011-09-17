@@ -49,7 +49,6 @@ module Bind9mgr
 
     def load
       raise ArgumentError, "file not specified" unless @file
-     
       
       # TODO what should we do if there is no db file?
       # raise ArgumentError, "File: #{file} not found." unless File.exists?( @file )

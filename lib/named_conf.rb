@@ -32,6 +32,16 @@ module Bind9mgr
       parse File.read( @file ) if File.exists?(@file)
     end
 
+    # Load just one zone and return it
+    def load_one( zone_name )
+      raise ArgumentError, "Zone name expected to be a string" unless zone_name.kind_of? String
+      load
+      if zone = zones.find{ |z| z.name == zone_name }
+        zone.load
+      end
+      zone
+    end
+
     def load_with_zones
       load
       zones.each{ |z| z.load}

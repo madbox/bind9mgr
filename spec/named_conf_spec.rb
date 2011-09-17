@@ -181,6 +181,21 @@ alias1  	IN	CNAME	ns
   pending "should automatically make dir for zone db files"
   pending "should have methods to edit SOA values"
 
+  it "should have method to load just one zone" do
+    @nc.should respond_to :load_one
+  end
+
+  it "should load one zone on load_one call" do
+    Bind9mgr::Zone.any_instance.should_receive(:load).once
+    zone = @nc.load_one 'cloud.ru'
+  end
+
+  it "should return loadl zone on load_one call" do
+    zone = @nc.load_one 'cloud.ru'
+    zone.should be_kind_of Bind9mgr::Zone
+    zone.records.count.should > 0
+  end
+
   it "'load!' should raise error if named conf file is missing" do
     @nc.file = "missing.file"
     expect{ @nc.load! }.to raise_error
