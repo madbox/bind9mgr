@@ -99,7 +99,7 @@ module Bind9mgr
       if zone_or_name.kind_of?( Zone )
         raise ArgumentError, "file_name should be nil if instance of Zone supplied" unless file_name.nil?
         zone = zone_or_name
-      elsif zone_or_name.kind_of?( String )
+      elsif zone_or_name.kind_of?( String ) && ( zone_or_name.length > 4 ) # at last 'a.a.'
         raise ArgumentError, "Main ns not secified" unless @main_ns
         # raise ArgumentError, "Secondary ns not secified" unless @secondary_ns
         raise ArgumentError, "Support email not secified" unless @support_email
@@ -113,7 +113,7 @@ module Bind9mgr
                          :main_server_ip => @main_server_ip,
                          :mail_server_ip => @mail_server_ip)
       else
-        raise( RuntimeError, "BindZone or String instance needed")
+        raise( RuntimeError, "BindZone or String instance expected, but #{zone_or_name.inspect} got")
       end
 
       del_zone! zone.origin
