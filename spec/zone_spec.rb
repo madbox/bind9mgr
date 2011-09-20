@@ -67,4 +67,14 @@ alias1  	IN	CNAME	ns
     zone.name.should eql('example.com')
   end
 
+  it "should raise error when undefined rr target added" do
+    # examples
+    # 1:
+    # @ NS ns.example.com # here is no dot at the end of line -> error!
+    #
+    # 2:
+    # ns.example.com CNAME @
+    # @ NS ns.example.com # here is no dot at the end of line but this is not error: subdomain really defined
+  end
+
 end
