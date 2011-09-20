@@ -17,3 +17,16 @@
 
 * Bind9mgr::NamedConf#load_one( zone_name ) method added
 * specs update
+
+=== 0.2.9 / 2011-09-18
+
+* bugfix release
+
+=== 0.3.0 / 2011-09-20
+
+* bugfix: parser can't parse MX records without class
+
+=== 0.3.1 / 2011-09-20
+
+* light bugfixs
+* more descriptive errors when parsing 'bad' files.

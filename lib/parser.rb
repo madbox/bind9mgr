@@ -10,6 +10,7 @@ module Bind9mgr
       @result = Zone.new
 
       @STATE_RULES = 
+        # [current_state, target_state, proc to perform(token will be passe in)
         [ [:start, :origin, Proc.new{ |t| t == '$ORIGIN' }],
           [:origin, :start, Proc.new{ |t| set_origin t }],
           [:start, :ttl,    Proc.new{ |t| t == '$TTL' }],
@@ -21,6 +22,7 @@ module Bind9mgr
           [:owner, :rttl,   Proc.new{ |t| t.match(/^\d+$/) ? update_last_rr(nil, t, nil, nil, nil) : false }],
           [:owner, :klass,  Proc.new{ |t| KLASSES.include?(t) ? update_last_rr(nil, nil, t, nil, nil) : false }],
           [:owner, :type,   Proc.new{ |t| TYPES.include?(t) ? update_last_rr(nil, nil, nil, t, nil) : false }],
+          [:owner, :mx,     Proc.new{ |t| t == 'MX' ? update_last_rr(nil, nil, nil, t, nil) : false }],
           [:rttl,  :klass,  Proc.new{ |t| KLASSES.include?(t) ? update_last_rr(nil, nil, t, nil, nil) : false }],
           [:klass, :type,   Proc.new{ |t| TYPES.include?(t) ? update_last_rr(nil, nil, nil, t, nil) : false }],
           [:type, :start,   Proc.new{ |t| update_last_rr(nil, nil, nil, nil, t)  }],
