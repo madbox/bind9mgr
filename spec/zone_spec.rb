@@ -56,4 +56,15 @@ alias1  	IN	CNAME	ns
                                })
   end
 
+  it "should add dot to zone name on creation unless there is no one" do
+    zone = Bind9mgr::Zone.new( 'example.com', 'example.com.db',
+                               { :main_ns => '192.168.1.1',
+                                 :secondary_ns => '192.168.1.2',
+                                 :main_server_ip => '192.168.1.3',
+                                 :support_email => 'qwe@qwe.ru'
+                               })
+    zone.origin.should eql('example.com.')
+    zone.name.should eql('example.com')
+  end
+
 end

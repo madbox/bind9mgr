@@ -11,12 +11,12 @@ module Bind9mgr
                 'PTR'
               ]
 
-    attr_accessor :origin, :default_ttl
+    attr_accessor :default_ttl
     attr_accessor :file, :options
     attr_reader :records
 
     def initialize( zone_name = nil, zone_db_file = nil, options = { } )
-      @origin = zone_name
+      self.origin = zone_name
       @file = zone_db_file
       @options = options
 
@@ -28,6 +28,20 @@ module Bind9mgr
       @options[:default_ttl] ||= 86400
       
       clear_records
+    end
+
+    def origin
+      @origin
+    end
+
+    def origin= zone_origin
+      if zone_origin.kind_of?( String ) && zone_origin.length > 0
+        @origin = zone_origin.clone
+        @origin << '.' unless @origin[-1] == '.'
+      else
+        @origin = zone_origin 
+      end
+      @origin
     end
 
     def name
@@ -57,7 +71,11 @@ module Bind9mgr
       
       p = Parser.new
       p.result = self
-      p.parse File.read( @file )
+      begin
+        p.parse File.read( @file )
+      rescue 
+        raise RuntimeError, "Parser error. File: #{@file.inspect}.\nError: #{$!.to_s}\n#{$!.backtrace.join("\n")}"
+      end
     end
 
     def gen_db_content
