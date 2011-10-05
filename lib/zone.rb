@@ -1,16 +1,5 @@
 module Bind9mgr
   class Zone
-    RRClasses = ['IN', 'CH']
-    RRTypes = [ 'A',
-                'MX',
-                'SRV',
-                'CNAME',
-                'SOA',
-                'NS',
-                'TXT',
-                'PTR'
-              ]
-
     attr_accessor :default_ttl
     attr_accessor :file, :options
     attr_reader :records
@@ -74,7 +63,7 @@ module Bind9mgr
       begin
         p.parse File.read( @file )
       rescue 
-        raise RuntimeError, "Parser error. File: #{@file.inspect}.\nError: #{$!.to_s}\n#{$!.backtrace.join("\n")}"
+        raise ParserError, "Parser error. File: #{@file.inspect}.\nError: #{$!.to_s}\n#{$!.backtrace.join("\n")}"
       end
     end
 

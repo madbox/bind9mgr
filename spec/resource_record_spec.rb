@@ -29,6 +29,24 @@ describe Bind9mgr::ResourceRecord do
     @rr.should respond_to( :gen_rr_string )
   end
 
+  it "should raise error when wrong record exists on gen_rr_string" do
+    expect { @rr.gen_rr_string }.to raise_error
+  end
+
+  it "should fill errors array with something on validation" do
+    @rr.should_not be_valid
+    @rr.errors.size.should > 0
+    puts @rr.errors
+  end
+
+  it "should not raise error when valid record exists on gen_rr_string" do
+    @rr.owner = '@'
+    @rr.type = 'A'
+    @rr.rdata = '123.123.123.123'
+    
+    expect { @rr.gen_rr_string }.not_to raise_error
+  end
+
   it "shoult have a list of allowed rr types" do
     Bind9mgr::ALLOWED_TYPES.should be_kind_of(Array)
     Bind9mgr::ALLOWED_TYPES.count.should > 0

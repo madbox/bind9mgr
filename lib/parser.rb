@@ -28,7 +28,7 @@ module Bind9mgr
           [:type, :start,   Proc.new{ |t| update_last_rr(nil, nil, nil, nil, t)  }],
           [:klass, :soa,    Proc.new{ |t| t == 'SOA' ? update_last_rr(nil, nil, nil, t, nil) : false }],
           [:soa, :start,    Proc.new{ |t| rdata = [t] + @tokens.shift(7)
-             raise RuntimeError, "Zone parsing error: parentices expected in SOA record.\n#{@content}" if (rdata[2] != '(') && (@tokens.first != ')')
+             raise ParserError, "Zone parsing error: parentices expected in SOA record.\n#{@content}" if (rdata[2] != '(') && (@tokens.first != ')')
              rdata.delete_at(2)
              @result.options[:support_email] = rdata[1]
              @result.options[:serial] = rdata[2]
@@ -53,7 +53,7 @@ module Bind9mgr
         token = @tokens.shift
         # puts "state: #{@state}, token: #{token}"
         possible_edges = @STATE_RULES.select{|arr|arr[0] == @state }
-        raise "no possible_edges. cur_state: #{@state}" if possible_edges.count < 1
+        raise( ParserError, "no possible_edges. cur_state: #{@state}" ) if possible_edges.count < 1
 
         flag = false
         while ( possible_edges.count > 0 ) && flag == false
@@ -65,7 +65,7 @@ module Bind9mgr
           @state = current_edge[1] if flag
         end
 
-        raise "no successful rules found. cur_state: #{@state}, token: #{token}" unless flag
+        raise( ParserError, "no successful rules found. cur_state: #{@state}, token: #{token}" ) unless flag
         cntr += 1
       end
 
