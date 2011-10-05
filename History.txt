@@ -36,3 +36,7 @@
 * light bugfixes
 * adds dot to origin if there is no one
 * new specs
+
+=== 0.3.3 / 2011-10-05
+
+* some resource record validations added
