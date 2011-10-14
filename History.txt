@@ -40,3 +40,8 @@
 === 0.3.3 / 2011-10-05
 
 * some resource record validations added
+
+=== 0.3.4 / 2011-10-14
+
+* A record validations
+* SOA record validations
