@@ -47,6 +47,35 @@ describe Bind9mgr::ResourceRecord do
     expect { @rr.gen_rr_string }.not_to raise_error
   end
 
+  describe "A records validation" do
+    subject { Bind9mgr::ResourceRecord }
+    
+    it( "with normal data" ) { subject.new( 'sub', nil, 'IN', 'A', '192.168.1.1' ).should be_valid }
+    it( "without class"    ) { subject.new( 'sub', nil, nil, 'A', '192.168.1.1' ).should be_valid }
+    it( "with blank owner" ) { subject.new( '', nil, 'IN', 'A', '192.168.1.1' ).should be_valid }
+    it( "with nil owner"   ) { subject.new( nil, nil, 'IN', 'A', '192.168.1.1' ).should be_valid }
+    
+    it( "with '1' in all fields"     ) { subject.new( '1', '1', '1', 'A', '1' ).should_not be_valid }
+    it( "with digit in owner"        ) { subject.new( '1', nil, 'IN', 'A', '192.168.1.1' ).should_not be_valid }
+    it( "with double digit in owner" ) { subject.new( '11', nil, 'IN', 'A', '192.168.1.1' ).should_not be_valid }
+    it( "with blank rdata"           ) { subject.new( 'sub', nil, 'IN', 'A', '' ).should_not be_valid }
+    it( "with nil rdata"             ) { subject.new( 'sub', nil, 'IN', 'A', nil ).should_not be_valid }
+    it( "with digit in rdata"        ) { subject.new( '1', nil, 'IN', 'A', '1' ).should_not be_valid }
+    it( "with char in rdata"         ) { subject.new( '1', nil, 'IN', 'A', 's' ).should_not be_valid }
+    it( "with punctuation in rdata"  ) { subject.new( '1', nil, 'IN', 'A', ',;;;' ).should_not be_valid }
+    it( "with wrong class"           ) { subject.new( 'sub', nil, 'IN222', 'A', '192.168.1.1' ).should_not be_valid }
+  end
+
+  describe "SOA records validation" do
+    subject { Bind9mgr::ResourceRecord }
+
+    it( "with normal data" ) { subject.new( '@', nil, 'IN', 'SOA', ['qwe.com.', 'support@qwe.com', '123', '123', '123', '123', '123'] ).should be_valid }
+    it( "with wrong origin in rdata" ) { subject.new( '@', nil, 'IN', 'SOA', ['qwe', 'qwe', '123', '123', '123', '123', '123'] ).should_not be_valid }
+    it( "with wrong rdata size" ) { subject.new( '@', nil, 'IN', 'SOA', ['123', '123', '123'] ).should_not be_valid }
+    it( "with wrong rdata kind" ) { subject.new( '@', nil, 'IN', 'SOA', 'qwe' ).should_not be_valid }
+
+  end
+
   it "shoult have a list of allowed rr types" do
     Bind9mgr::ALLOWED_TYPES.should be_kind_of(Array)
     Bind9mgr::ALLOWED_TYPES.count.should > 0

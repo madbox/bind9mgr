@@ -17,27 +17,34 @@ module Bind9mgr
     def valid?
       @errors = []
       (@errors << "Base type_and_rdata_shouldnt_be_blank"; return false)   unless @type && @rdata
-      (@errors << "Owner invalid")                                         if     @owner && ( !@owner.kind_of?(String) || (@owner.length < 1) || (@owner.match(/^\d+$/)) || (@owner == 'localhost') )
+      (@errors << "Owner invalid")                                         if     @owner && ( !@owner.kind_of?(String) || (@owner.match(/^\d+$/)) || (@owner == 'localhost') )
       (@errors << "Class invalid")                                         if     !klass.nil? && !KLASSES.include?( klass ) 
       (@errors << "Type not_supported")                                    unless ALLOWED_TYPES.include?( type )
 
       validate_method_name = "validate_#{@type.downcase}"
-      
-      self.class.send validate_method_name if self.class.respond_to?(validate_method_name)
+
+      (self.send validate_method_name) if self.respond_to?(validate_method_name)
 
       return @errors.size == 0
     end
 
+    def validate_soa
+      (@errors << "Rdata should_be_an_array"; return false) unless @rdata.kind_of? Array
+      (@errors << "Rdata should_have_7_elements"; return false) unless @rdata.size == 7
+      (@errors << "Base a record validation is under construction") unless @rdata[0].match(/\.$/)
+    end
+
     def validate_a
-      @errors << "Base a record validation is under construction"
+      (@errors << "Rdata should_be_a_string"; return false) unless @rdata.kind_of? String
+      (@errors << "Rdata should_not_be_blank"; return false) if @rdata.length < 1
     end
 
     def validate_cname 
-      @errors << "Base cname record validation is under construction"
+#      @errors << "Base cname record validation is under construction"
     end
 
     def validate_mx
-      @errors << "Base mx record validation is under construction"
+#      @errors << "Base mx record validation is under construction"
     end
 
     ##
