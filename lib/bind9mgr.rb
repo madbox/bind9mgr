@@ -13,6 +13,8 @@ module Bind9mgr
   KLASSES = %w{IN CH}
   ALLOWED_TYPES = %w{A CNAME MX TXT PTR NS SRV SOA}
 
-  class ParserError             < RuntimeError; end
-  class MalformedResourceRecord < RuntimeError; end
+  class Bind9mgrError           < RuntimeError; end
+
+  class ParserError             < Bind9mgrError; end
+  class MalformedResourceRecord < Bind9mgrError; end
 end
