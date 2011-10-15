@@ -17,6 +17,7 @@ module Bind9mgr
     def valid?
       @errors = []
       (@errors << "Base type_and_rdata_shouldnt_be_blank"; return false)   unless @type && @rdata
+      (@errors << "Rdata rdata_shouldnt_be_blank_string"; return false)    if @rdata.kind_of?(String) && @rdata.length < 1
       (@errors << "Owner invalid")                                         if     @owner && ( !@owner.kind_of?(String) || (@owner.match(/^\d+$/)) || (@owner == 'localhost') )
       (@errors << "Class invalid")                                         if     !klass.nil? && !KLASSES.include?( klass ) 
       (@errors << "Type not_supported")                                    unless ALLOWED_TYPES.include?( type )
@@ -29,22 +30,28 @@ module Bind9mgr
     end
 
     def validate_soa
-      (@errors << "Rdata should_be_an_array"; return false) unless @rdata.kind_of? Array
-      (@errors << "Rdata should_have_7_elements"; return false) unless @rdata.size == 7
+      (@errors << "Rdata should_be_an_array"; return false)         unless @rdata.kind_of? Array
+      (@errors << "Rdata should_have_7_elements"; return false)     unless @rdata.size == 7
       (@errors << "Base a record validation is under construction") unless @rdata[0].match(/\.$/)
     end
 
     def validate_a
-      (@errors << "Rdata should_be_a_string"; return false) unless @rdata.kind_of? String
-      (@errors << "Rdata should_not_be_blank"; return false) if @rdata.length < 1
+      (@errors << "Rdata should_be_a_string"; return false)  unless @rdata.kind_of? String
+      (@errors << "Rdata should_not_be_blank"; return false) if @rdata.length < 1 # TODO DRY it
     end
 
     def validate_cname 
-#      @errors << "Base cname record validation is under construction"
+      (@errors << "owner should_be_a_string"; return false)             unless @owner.kind_of? String
+      (@errors << "owner should_not_contain_only_digits"; return false) if @owner.match(/^\d+$/)
     end
 
     def validate_mx
-#      @errors << "Base mx record validation is under construction"
+      (@errors << "Rdata should_be_an_array"; return false)                    unless @rdata.kind_of? Array
+      (@errors << "Rdata should_contain_priority"; return false)               unless @rdata[0].to_s.match(/^\d+$/) # TODO how about integer value
+      (@errors << "Rdata target_should_not_contain_only_digits"; return false) if @rdata[1].match(/^\d+$/)
+    end
+
+    def validate_txt
     end
 
     ##

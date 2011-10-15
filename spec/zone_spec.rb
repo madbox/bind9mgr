@@ -47,27 +47,44 @@ alias1  	IN	CNAME	ns
   end
   pending "should generate zone entry content"
 
-  it "should add default rrs before generate db content" do
-    zone = Bind9mgr::Zone.new( 'example.com', 'example.com.db',
-                               { :main_ns => '192.168.1.1',
-                                 :secondary_ns => '192.168.1.2',
-                                 :main_server_ip => '192.168.1.3',
-                                 :support_email => 'qwe@qwe.ru'
-                               })
+  describe "records creation & validation" do
+    subject do
+      Bind9mgr::Zone.new( 'example.com', 'example.com.db',
+                          { :main_ns => '192.168.1.1',
+                            :secondary_ns => '192.168.1.2',
+                            :main_server_ip => '192.168.1.3',
+                            :support_email => 'qwe@qwe.ru'
+                          })
+    end
+
+    it "should add default rrs before generate db content" do
+      subject.gen_db_content
+      subject.records.size.should > 0
+    end
+    
+    it "should add dot to zone name on creation unless there is no one" do
+      subject.origin.should eql('example.com.')
+      subject.name.should eql('example.com')
+    end
+    
+    it "should not be valid without records" do
+      subject.should_not be_valid
+    end
+    
+    it "should pass when there are default records and some valid ones" do
+      subject.add_default_rrs
+      subject.add_rr( 'qwe', nil, nil, 'CNAME', '@' )
+      subject.should be_valid
+    end
+    
+    it "should not be valid with wrong records" do
+      subject.add_default_rrs
+      subject.add_rr( 'qwe', nil, nil, 'CNAME', '' )
+      subject.should_not be_valid
+    end
   end
 
-  it "should add dot to zone name on creation unless there is no one" do
-    zone = Bind9mgr::Zone.new( 'example.com', 'example.com.db',
-                               { :main_ns => '192.168.1.1',
-                                 :secondary_ns => '192.168.1.2',
-                                 :main_server_ip => '192.168.1.3',
-                                 :support_email => 'qwe@qwe.ru'
-                               })
-    zone.origin.should eql('example.com.')
-    zone.name.should eql('example.com')
-  end
-
-  it "should raise error when undefined rr target added" do
+  pending "should raise error when undefined rr target added" do
     # examples
     # 1:
     # @ NS ns.example.com # here is no dot at the end of line -> error!

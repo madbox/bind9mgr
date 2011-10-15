@@ -158,6 +158,11 @@ zone "#{name}" {
       true
     end
 
+    def valid?
+      return false if @records.size < 1
+      @records.select{ |z| !z.valid? }.size == 0
+    end
+
     private
 
     def default_soa
