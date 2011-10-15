@@ -17,12 +17,14 @@ Features:
 * add zone intaeface
 * delete zone interface
 * automatic zone options management (origin, default NS, default A, "www" CNAME etc)
+* zones and records validations
 
 Please look into specs for more detailed info.
 
 TODO: more configuration features
 TODO: more conventions(feedback welcomed!)
-TODO: xml mappings for restful APIs
+TODO: true domain names validations
+TODO: RFC records validations
 
 == SYNOPSIS:
 
