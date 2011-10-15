@@ -45,3 +45,7 @@
 
 * A record validations
 * SOA record validations
+
+=== 0.3.5 / 2011-10-15
+
+* Exceptions inherited from Bind9mgrError
