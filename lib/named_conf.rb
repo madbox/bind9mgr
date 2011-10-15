@@ -118,6 +118,7 @@ module Bind9mgr
 
       del_zone! zone.origin
       @zones.push zone
+      zone
     end
     
     def find( origin_or_name )

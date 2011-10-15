@@ -53,3 +53,11 @@
 === 0.3.6 / 2011-10-15
 
 * Resource records saved twice: bugfix
+
+=== 0.3.7 / 2011-10-15
+
+* db_file generation fix
+
+=== 0.3.8 / 2011-10-15
+
+* NamedConf#add_zone returns Zone instance
