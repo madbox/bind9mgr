@@ -76,13 +76,13 @@ module Bind9mgr
       rrhash = @records.inject({}){|s, v| s[v.type] ||= []; s[v.type] << v; s}
 
       cont = "; File is under automatic control. Edit with caution.\n"
-      cont << ";;; Zone #{@origin} ;;;" << "\n"
+      cont << ";;; Zone #{@origin} ;;;\n" << "\n"
       cont << "$ORIGIN #{@origin}" << "\n" if @origin
       cont << "$TTL #{@default_ttl}" << "\n" if @default_ttl
 
       rrhash.keys.each do |rr_type|
-        cont << ";;; #{rr_type} ;;;"
-        cont << rrhash[rr_type].map{ |r| r.gen_rr_string }.join
+        cont << ";;; #{rr_type} ;;;\n"
+        cont << rrhash[rr_type].map{ |r| r.gen_rr_string }.join("\n")
       end
 
       cont
