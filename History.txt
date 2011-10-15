@@ -61,3 +61,10 @@
 === 0.3.8 / 2011-10-15
 
 * NamedConf#add_zone returns Zone instance
+
+=== 0.3.9 / 2011-10-16
+
+* CNAME validations
+* MX validations
+* A validations
+* spec update
