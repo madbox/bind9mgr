@@ -81,10 +81,9 @@ module Bind9mgr
       cont << "$TTL #{@default_ttl}" << "\n" if @default_ttl
 
       rrhash.keys.each do |rr_type|
-        cont << ";;; #{rr_type} ;;;\n"
+        cont << ";;; #{rr_type} ;;;"
         cont << rrhash[rr_type].map{ |r| r.gen_rr_string }.join
       end
-      cont << @records.map{ |r| r.gen_rr_string }.join
 
       cont
     end

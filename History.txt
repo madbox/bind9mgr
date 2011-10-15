@@ -49,3 +49,7 @@
 === 0.3.5 / 2011-10-15
 
 * Exceptions inherited from Bind9mgrError
+
+=== 0.3.6 / 2011-10-15
+
+* Resource records saved twice: bugfix

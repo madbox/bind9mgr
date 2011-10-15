@@ -120,6 +120,10 @@ module Bind9mgr
       @zones.push zone
     end
     
+    def find( origin_or_name )
+      @zones.select{ |z| z.origin == origin_or_name || z.name == origin_or_name }
+    end
+
     # We should remove zone enties and delete db file immidiately.
     def del_zone!( origin_or_name )
       founded = @zones.select{ |z| z.origin == origin_or_name || z.name == origin_or_name }
