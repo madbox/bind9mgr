@@ -17,6 +17,8 @@ module Bind9mgr
       @options[:default_ttl] ||= 86400
       
       clear_records
+
+      self
     end
 
     def origin
@@ -158,8 +160,13 @@ zone "#{name}" {
       true
     end
 
+    def self.domain_name_syntax_valid( string )
+      ! string.match(/^([\w\d\-]{2,}\.)+(\w{2,})\.?$/).nil?
+    end
+
     def valid?
       return false if @records.size < 1
+      return false unless Bind9mgr::Zone.domain_name_syntax_valid( self.origin )
       @records.select{ |z| !z.valid? }.size == 0
     end
 
