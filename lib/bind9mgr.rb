@@ -6,7 +6,7 @@ require File.join( File.dirname(__FILE__), 'resource_record' )
 require File.join( File.dirname(__FILE__), 'parser' )
 
 module Bind9mgr
-  VERSION = '0.3.10'
+  VERSION = '0.3.11'
 
   ZONES_BIND_SUBDIR = 'primary'
 
@@ -14,7 +14,7 @@ module Bind9mgr
   ALLOWED_TYPES = %w{A CNAME MX TXT PTR NS SRV SOA}
 
   class Bind9mgrError           < RuntimeError; end
-
+  class InvalidZoneError        < RuntimeError; end
   class ParserError             < Bind9mgrError; end
   class MalformedResourceRecord < Bind9mgrError; end
 end

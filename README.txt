@@ -25,6 +25,7 @@ TODO: more configuration features
 TODO: more conventions(feedback welcomed!)
 TODO: true domain names validations
 TODO: RFC records validations
+TODO: ignore bad zone db files
 
 == SYNOPSIS:
 

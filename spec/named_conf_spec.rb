@@ -172,8 +172,6 @@ alias1  	IN	CNAME	ns
     @nc.zones.last.add_rr( 'cname', nil, nil, 'CNAME', '@' )
     @nc.zones.count.should == 3 # we specified 2 zones in "before"
     @nc.add_zone( 'example.com' )
-    @nc.zones.last.records.count.should == 0
-    @nc.zones.last.add_default_rrs
     @nc.zones.last.records.count.should == 5 # new zone should have SOA, A, CNAME(www) and 2*NS records
   end
 

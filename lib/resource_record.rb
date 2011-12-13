@@ -68,9 +68,9 @@ module Bind9mgr
         cont << "\t#{rdata[4]} ; retry\n"
         cont << "\t#{rdata[5]} ; expire\n"
         cont << "\t#{rdata[6]} ; minimum\n"
-        cont << ")"
+        cont << ")\n"
       else
-        "#{@owner}\t#{@ttl}\t#{@klass}\t#{@type}\t#{[@rdata].flatten.join(' ')}"
+        "#{@owner}\t#{@ttl}\t#{@klass}\t#{@type}\t#{[@rdata].flatten.join(' ')}\n"
       end
     end
   end

@@ -84,7 +84,8 @@ module Bind9mgr
 
       rrhash.keys.each do |rr_type|
         cont << ";;; #{rr_type} ;;;\n"
-        cont << rrhash[rr_type].map{ |r| r.gen_rr_string }.join("\n")
+        cont << rrhash[rr_type].map{ |r| r.gen_rr_string }.join
+        cont << "\n"
       end
 
       cont

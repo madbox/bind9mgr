@@ -30,6 +30,7 @@ module Bind9mgr
     def load
       init_zones
       parse File.read( @file ) if File.exists?(@file)
+      zones
     end
 
     # Load just one zone and return it
@@ -99,9 +100,9 @@ module Bind9mgr
       if zone_or_name.kind_of?( Zone )
         raise ArgumentError, "file_name should be nil if instance of Zone supplied" unless file_name.nil?
         zone = zone_or_name
-      elsif zone_or_name.kind_of?( String ) && ( zone_or_name.length > 4 ) # at last 'a.a.'
+      elsif zone_or_name.kind_of?( String )
         raise ArgumentError, "Main ns not secified" unless @main_ns
-        # raise ArgumentError, "Secondary ns not secified" unless @secondary_ns
+        # TODO what to do with sec. ns? # raise ArgumentError, "Secondary ns not secified" unless @secondary_ns
         raise ArgumentError, "Support email not secified" unless @support_email
         raise ArgumentError, "Main server ip not secified" unless @main_server_ip
         
@@ -112,9 +113,12 @@ module Bind9mgr
                          :support_email => @support_email,
                          :main_server_ip => @main_server_ip,
                          :mail_server_ip => @mail_server_ip)
+        zone.add_default_rrs
       else
         raise( RuntimeError, "BindZone or String instance expected, but #{zone_or_name.inspect} got")
       end
+
+      raise InvalidZoneError, zone.inspect unless zone.valid?
 
       del_zone! zone.origin
       @zones.push zone

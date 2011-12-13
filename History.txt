@@ -68,3 +68,13 @@
 * MX validations
 * A validations
 * spec update
+
+=== 0.3.10
+
+* bug fixes
+
+=== 0.3.11
+
+* Zone db file generation fix (bad new lines)
+* NamedConf#add_zone adds default records wthen called with string
+* Tests update
