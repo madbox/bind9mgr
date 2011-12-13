@@ -73,7 +73,7 @@
 
 * bug fixes
 
-=== 0.3.11
+=== 0.3.11 / 2011-12-13
 
 * Zone db file generation fix (bad new lines)
 * NamedConf#add_zone adds default records wthen called with string
