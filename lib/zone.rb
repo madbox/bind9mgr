@@ -84,7 +84,7 @@ module Bind9mgr
 
       rrhash.keys.each do |rr_type|
         cont << ";;; #{rr_type} ;;;\n"
-        cont << rrhash[rr_type].map{ |r| r.gen_rr_string }.join
+        cont << rrhash[rr_type].map{ |r| r.gen_rr_string }.join("\n")
         cont << "\n"
       end
 
@@ -92,6 +92,7 @@ module Bind9mgr
     end
     
     def write_db_file
+      raise ArgumentError, "File not specified" if @file.nil? || @file.length < 1
       db_dir = File.dirname( @file )
       raise( Errno::ENOENT, "No such dir: #{db_dir}" ) unless File.exists? db_dir
       File.open( @file, 'w' ){|f| f.write( gen_db_content )}
@@ -99,6 +100,7 @@ module Bind9mgr
 
     def add_default_rrs
       raise ArgumentError, "Main ns not specified" unless @options[:main_ns]
+      # TODO main server ip should be renamed to default server ip (or what?)
       raise ArgumentError, "Main server ip not specified" unless @options[:main_server_ip]
 
       ensure_soa_rr( default_soa )
@@ -190,7 +192,8 @@ zone "#{name}" {
     end
 
     def initialized?
-      raise( ArgumentError, "zone not initialized" ) if  @origin.nil? || @file.nil?
+      raise( ArgumentError, "zone not initialized" ) if  @origin.nil?
+      puts "WARNING: @file undefined" unless @file.nil?
     end
     
   end

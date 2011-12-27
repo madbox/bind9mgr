@@ -78,3 +78,7 @@
 * Zone db file generation fix (bad new lines)
 * NamedConf#add_zone adds default records wthen called with string
 * Tests update
+
+=== 0.3.11 / 2011-12-26
+
+* Missing newLine after rr in generated zone db files bug fix

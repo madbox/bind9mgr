@@ -35,6 +35,16 @@ alias1  	IN	CNAME	ns
     Bind9mgr::Zone.new.should be_kind_of( Bind9mgr::Zone )
   end
 
+  it "should generate default rrs without @file association" do
+    zone = Bind9mgr::Zone.new
+    zone.name = 'test.ru'
+    zone.options[:main_ns] = 'ns.test.ru'
+    zone.options[:main_server_ip] = '123.123.123.123'
+    zone.options[:support_email] = 'adm@test.ru'
+    zone.records.count.should == 0
+    expect{ zone.add_default_rrs }.not_to raise_error
+    zone.records.count.should == 4
+  end
 
   it "should fill itself with data on load method call" do
     @zone.load
@@ -43,13 +53,19 @@ alias1  	IN	CNAME	ns
 
   pending "should fail to generate db file content unless mandatory options filled"
   pending "should raise if wrong rr type specified"
-  pending "should not write repeating rrs"
+
+  it "should not write file unless file specified" do
+    @zone.file = nil
+    expect{ @zone.write_db_file }.to raise_error
+  end
+
   it "should generate db file content" do
     @zone.load
     cont = @zone.gen_db_content
     cont.should be_kind_of( String )
     cont.match(/#{@zone.origin}/m).should be
   end
+
   pending "should generate zone entry content"
 
   describe "records creation & validation" do
