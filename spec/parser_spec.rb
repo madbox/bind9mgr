@@ -21,6 +21,7 @@ NS ns2.cloud.ru
 manager		IN	A	192.168.1.20
 director	IN	A	192.168.1.23
 directorproxy	IN	A	192.168.1.24
+human-txt     TXT "qwer fdsf ;;;"
 oracle		IN	A	192.168.1.19
 vcenter		IN	A	192.168.1.12
 esx1		IN	A	192.168.1.2
