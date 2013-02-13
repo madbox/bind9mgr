@@ -1,8 +1,10 @@
 require 'spec_helper'
 
 describe Bind9mgr::Parser do
+
+  # first rrs are used by index at some tests so dont change their sequence
   let(:test_zone) do
-    %q{$ORIGIN cloud.ru.
+    %Q{$ORIGIN cloud.ru.
 $TTL 86400 ; 1 day
 @	IN	SOA	cloud.ru. root.cloud.ru. (
 	2011083002	; serial
@@ -17,11 +19,12 @@ nfsstorage	IN	CNAME	ns
 mail            IN MX 40 192.168.1.33
 www CNAME @
 cloud.ru.	IN	A	192.168.1.1
+human-txt     TXT 'this is text with spases'
+
 NS ns2.cloud.ru
 manager		IN	A	192.168.1.20
 director	IN	A	192.168.1.23
 directorproxy	IN	A	192.168.1.24
-human-txt     TXT "qwer fdsf ;;;"
 oracle		IN	A	192.168.1.19
 vcenter		IN	A	192.168.1.12
 esx1		IN	A	192.168.1.2
@@ -96,6 +99,14 @@ esx1		IN	A	192.168.1.2
     rr.owner.should eql('ns')
     rr.klass.should eql('IN')
     rr.rdata.should eql('192.168.1.200')
+  end
+
+  it "should parse TXT records" do
+    rr = @result.records[7]
+    rr.type.should == 'TXT'
+    rr.owner.should eql('human-txt')
+    rr.klass.should eql(nil)
+    rr.rdata.should eql("'this is text with spases'")
   end
 
   it "should parse MX records(and mx priority!)" do
