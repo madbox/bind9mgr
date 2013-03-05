@@ -82,3 +82,14 @@
 === 0.3.11 / 2011-12-26
 
 * Missing newLine after rr in generated zone db files bug fix
+
+=== 0.3.13 / 2013-02-13
+
+* Parser fix: TXT records with spaces are parsed without failure
+* test added
+
+=== 0.3.14 / 2013-03-05
+
+* Parser fix: TXT, SRV, MX parse algorithm rewrited
+* Parser rules definition optimized
+* test zone contents updated

@@ -21,6 +21,22 @@ www CNAME @
 cloud.ru.	IN	A	192.168.1.1
 human-txt     TXT 'this is text with spases'
 
+
+
+dev-office 300 IN TXT 'v=spf1 mx mx:mail.dev-office.o7russia.ru ~all'
+dev-office2 300 TXT 'v=spf2 mx mx:mail.dev-office.o7russia.ru ~all'
+dev-office3 IN TXT 'v=spf3 mx mx:mail.dev-office.o7russia.ru ~all'
+dev-office4 TXT 'v=spf4 mx mx:mail.dev-office.o7russia.ru ~all'
+TXT 'v=spf5 mx mx:mail.dev-office.o7russia.ru ~all'
+
+test-srv 444 IN SRV 0 1 555 46.61.233.44
+test-srv2 444 SRV 0 2 555 46.61.233.44
+test-srv3 IN SRV 0 3 555 46.61.233.44
+test-srv4 SRV 0 4 555 46.61.233.44
+SRV 0 5 555 46.61.233.44
+
+_sip._tls.dev-office SRV 0 5 443 sip.dev-office
+
 NS ns2.cloud.ru
 manager		IN	A	192.168.1.20
 director	IN	A	192.168.1.23

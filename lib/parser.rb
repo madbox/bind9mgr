@@ -1,5 +1,6 @@
 module Bind9mgr
-  TYPES = %w{A CNAME PTR NS SRV} # SOA, MX, TXT - are different
+  # this TYPES will be parsed with simplified state_rules chain
+  TYPES = %w{A CNAME PTR NS} # SOA, MX, TXT, SRV - are different
   class Parser
 
     attr_reader :state
@@ -9,26 +10,40 @@ module Bind9mgr
       @state = :start
       @result = Zone.new
 
+      @SHARED_RULES = {
+        :txt => Proc.new{ |t| t == 'TXT' ? update_last_rr(nil, nil, nil, t, nil) : false },
+        :mx  => Proc.new{ |t| t == 'MX'  ? update_last_rr(nil, nil, nil, t, nil) : false },
+        :srv => Proc.new{ |t| t == 'SRV' ? update_last_rr(nil, nil, nil, t, nil) : false }
+      }
+
       @STATE_RULES = 
         # [current_state, target_state, proc to perform(token will be passe in)
-        [ [:start, :origin, Proc.new{ |t| t == '$ORIGIN' }],
-          [:origin, :last_token_in_a_row, Proc.new{ |t| set_origin t }],
-          [:start, :ttl,    Proc.new{ |t| t == '$TTL' }],
+        [ [:origin, :last_token_in_a_row, Proc.new{ |t| set_origin t }],
           [:ttl, :last_token_in_a_row,    Proc.new{ |t| set_ttl t }],
           [:last_token_in_a_row, :start, Proc.new{ |t| t == "\n" ? true : false }],
-          [:start, :type,   Proc.new{ |t| TYPES.include?(t) ? add_rr(nil, nil, nil, t, nil) : false }],
-          [:start, :klass,  Proc.new{ |t| KLASSES.include?(t) ? add_rr(nil, nil, t, nil, nil) : false }],
-          [:start, :rttl,   Proc.new{ |t| t.match(/^\d+$/) ? add_rr(nil, t, nil, nil, nil) : false }],
-          [:start, :owner,  Proc.new{ |t| add_rr(t, nil, nil, nil, nil) }],
           [:owner, :rttl,   Proc.new{ |t| t.match(/^\d+$/) ? update_last_rr(nil, t, nil, nil, nil) : false }],
           [:owner, :klass,  Proc.new{ |t| KLASSES.include?(t) ? update_last_rr(nil, nil, t, nil, nil) : false }],
           [:owner, :type,   Proc.new{ |t| TYPES.include?(t) ? update_last_rr(nil, nil, nil, t, nil) : false }],
-          [:owner, :mx,     Proc.new{ |t| t == 'MX' ? update_last_rr(nil, nil, nil, t, nil) : false }],
-          [:owner, :txt,    Proc.new{ |t| t == 'TXT' ? update_last_rr(nil, nil, nil, t, nil) : false }],
+          [:owner, :mx,     @SHARED_RULES[:mx]],
+          [:owner, :srv,    @SHARED_RULES[:srv]],
+          [:owner, :txt,    @SHARED_RULES[:txt]],
           [:rttl,  :klass,  Proc.new{ |t| KLASSES.include?(t) ? update_last_rr(nil, nil, t, nil, nil) : false }],
+          [:rttl,  :txt,    @SHARED_RULES[:txt]],
+          [:rttl,  :srv,    @SHARED_RULES[:srv]],
+          [:klass, :mx,     @SHARED_RULES[:mx]],
+          [:klass, :txt,    @SHARED_RULES[:txt]],
+          [:klass, :srv,    @SHARED_RULES[:srv]],
           [:klass, :type,   Proc.new{ |t| TYPES.include?(t) ? update_last_rr(nil, nil, nil, t, nil) : false }],
-          [:type, :last_token_in_a_row,   Proc.new{ |t| update_last_rr(nil, nil, nil, nil, t)  }],
           [:klass, :soa,    Proc.new{ |t| t == 'SOA' ? update_last_rr(nil, nil, nil, t, nil) : false }],
+          [:type,  :last_token_in_a_row,   Proc.new{ |t| update_last_rr(nil, nil, nil, nil, t)  }],
+          [:start, :type,   Proc.new{ |t| TYPES.include?(t) ? add_rr(nil, nil, nil, t, nil) : false }],
+          [:start, :klass,  Proc.new{ |t| KLASSES.include?(t) ? add_rr(nil, nil, t, nil, nil) : false }],
+          [:start, :rttl,   Proc.new{ |t| t.match(/^\d+$/) ? add_rr(nil, t, nil, nil, nil) : false }],
+          [:start, :origin, Proc.new{ |t| t == '$ORIGIN' }],
+          [:start, :ttl,    Proc.new{ |t| t == '$TTL' }],
+          [:start,  :srv,    @SHARED_RULES[:srv]],
+          [:start,  :txt,    @SHARED_RULES[:txt]],
+          [:start, :owner,  Proc.new{ |t| add_rr(t, nil, nil, nil, nil) }],
           [:soa, :last_token_in_a_row,    Proc.new{ |t| rdata = [t] + @tokens.shift(@tokens.index(')'))
              rdata.select!{|tt| tt != "\n" }
              raise ParserError, "Zone parsing error: parentices expected in SOA record.\n#{@content}" if (rdata[2] != '(') && (@tokens.first != ')')
@@ -42,8 +57,8 @@ module Bind9mgr
              update_last_rr(nil, nil, nil, nil, rdata)
              @tokens.shift
            }],
-          [:klass, :mx,     Proc.new{ |t| t == 'MX' ? update_last_rr(nil, nil, nil, t, nil) : false }],
           [:mx, :last_token_in_a_row,     Proc.new{ |t| update_last_rr(nil, nil, nil, nil, [t] + [@tokens.shift]) }], 
+          [:srv, :last_token_in_a_row,     Proc.new{ |t| update_last_rr(nil, nil, nil, nil, [t] + [@tokens.shift(3)]) }], 
           [:txt, :last_token_in_a_row,     Proc.new{ |t| update_last_rr(nil, nil, nil, nil, ([t] + [@tokens.shift(@tokens.index("\n"))]).join(" ")) }] # '\t' symbol is lost here! may be a BUG
         ]
     end
@@ -83,14 +98,13 @@ module Bind9mgr
     private
 
     def tokenize str
+      str.squeeze!("\n\t\r")
       dirty_tokens = str.gsub(/;.*$/, '').split(/[ \t\r]/)
 
       puts dirty_tokens.inspect
 
       tokens = []
       dirty_tokens.each do |t|
-
-        
 
         if t.index("\n")
           puts "n found: #{t.inspect}"
