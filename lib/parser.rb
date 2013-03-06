@@ -40,7 +40,7 @@ module Bind9mgr
           [:type,  :last_token_in_a_row,   Proc.new{ |t| update_last_rr(nil, nil, nil, nil, t)  }],
           [:start, :type,   Proc.new{ |t| TYPES.include?(t) ? add_rr(nil, nil, nil, t, nil) : false }],
           [:start, :klass,  Proc.new{ |t| KLASSES.include?(t) ? add_rr(nil, nil, t, nil, nil) : false }],
-          [:start, :rttl,   Proc.new{ |t| t.match(/^\d+$/) ? add_rr(nil, t, nil, nil, nil) : false }],
+          [:start, :rttl,   Proc.new{ |t| (t.match(/^\d+$/) && !@tokens.first.match(/^\d+$/) ) ? add_rr(nil, t, nil, nil, nil) : false }],
           [:start,  :srv,    @SHARED_RULES[:srv]],
           [:start,  :txt,    @SHARED_RULES[:txt]],
           [:start, :owner,  Proc.new{ |t| add_rr(t, nil, nil, nil, nil) }],

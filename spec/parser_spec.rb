@@ -40,6 +40,8 @@ SRV 0 5 555 46.61.233.44
 
 _sip._tls.dev-office SRV 0 5 443 sip.dev-office
 
+123 300 IN PTR 46.61.180.100
+
 NS ns2.cloud.ru
 manager		IN	A	192.168.1.20
 director	IN	A	192.168.1.23
