@@ -101,3 +101,7 @@
 === 0.3.16 / 2013-03-06
 
 * less debug messages in stdout
+
+=== 0.3.17 / 2013-03-06
+
+* owner can contain digits only (for reverse DNS PTR records)

@@ -17,8 +17,8 @@ module Bind9mgr
     def valid?
       @errors = []
       (@errors << "Base type_and_rdata_shouldnt_be_blank"; return false)   unless @type && @rdata
-      (@errors << "Rdata rdata_shouldnt_be_blank_string"; return false)    if @rdata.kind_of?(String) && @rdata.length < 1
-      (@errors << "Owner invalid")                                         if     @owner && ( !@owner.kind_of?(String) || (@owner.match(/^\d+$/)) || (@owner == 'localhost') )
+      (@errors << "Rdata rdata_shouldnt_be_blank_string"; return false)    if @rdata.kind_of?(String) && (@rdata.length < 1 || !@rdata.match(/[^\.\;\,]/))
+      (@errors << "Owner invalid")                                         if     @owner && ( !@owner.kind_of?(String) || (@owner == 'localhost') )
       (@errors << "Class invalid")                                         if     !klass.nil? && !KLASSES.include?( klass ) 
       (@errors << "Type not_supported")                                    unless ALLOWED_TYPES.include?( type )
 
