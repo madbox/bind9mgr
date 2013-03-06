@@ -93,3 +93,11 @@
 * Parser fix: TXT, SRV, MX parse algorithm rewrited
 * Parser rules definition optimized
 * test zone contents updated
+
+=== 0.3.15 / 2013-03-06
+
+* Parser fix: \n causes parsing error
+
+=== 0.3.16 / 2013-03-06
+
+* less debug messages in stdout

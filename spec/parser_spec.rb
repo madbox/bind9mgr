@@ -4,7 +4,10 @@ describe Bind9mgr::Parser do
 
   # first rrs are used by index at some tests so dont change their sequence
   let(:test_zone) do
-    %Q{$ORIGIN cloud.ru.
+    %Q{; File is under automatic control. Edit with caution.
+;;; Zone qwertyy.ru. ;;;
+
+$ORIGIN cloud.ru.
 $TTL 86400 ; 1 day
 @	IN	SOA	cloud.ru. root.cloud.ru. (
 	2011083002	; serial

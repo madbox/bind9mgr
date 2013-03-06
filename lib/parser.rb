@@ -18,7 +18,9 @@ module Bind9mgr
 
       @STATE_RULES = 
         # [current_state, target_state, proc to perform(token will be passe in)
-        [ [:origin, :last_token_in_a_row, Proc.new{ |t| set_origin t }],
+        [ [:start, :origin, Proc.new{ |t| t == '$ORIGIN' }],
+          [:start, :ttl,    Proc.new{ |t| t == '$TTL' }],
+          [:origin, :last_token_in_a_row, Proc.new{ |t| set_origin t }],
           [:ttl, :last_token_in_a_row,    Proc.new{ |t| set_ttl t }],
           [:last_token_in_a_row, :start, Proc.new{ |t| t == "\n" ? true : false }],
           [:owner, :rttl,   Proc.new{ |t| t.match(/^\d+$/) ? update_last_rr(nil, t, nil, nil, nil) : false }],
@@ -39,14 +41,13 @@ module Bind9mgr
           [:start, :type,   Proc.new{ |t| TYPES.include?(t) ? add_rr(nil, nil, nil, t, nil) : false }],
           [:start, :klass,  Proc.new{ |t| KLASSES.include?(t) ? add_rr(nil, nil, t, nil, nil) : false }],
           [:start, :rttl,   Proc.new{ |t| t.match(/^\d+$/) ? add_rr(nil, t, nil, nil, nil) : false }],
-          [:start, :origin, Proc.new{ |t| t == '$ORIGIN' }],
-          [:start, :ttl,    Proc.new{ |t| t == '$TTL' }],
           [:start,  :srv,    @SHARED_RULES[:srv]],
           [:start,  :txt,    @SHARED_RULES[:txt]],
           [:start, :owner,  Proc.new{ |t| add_rr(t, nil, nil, nil, nil) }],
-          [:soa, :last_token_in_a_row,    Proc.new{ |t| rdata = [t] + @tokens.shift(@tokens.index(')'))
+          [:soa, :last_token_in_a_row,    Proc.new{ |t|
+             rdata = [t] + @tokens.shift(@tokens.index(')'))
              rdata.select!{|tt| tt != "\n" }
-             raise ParserError, "Zone parsing error: parentices expected in SOA record.\n#{@content}" if (rdata[2] != '(') && (@tokens.first != ')')
+             raise ParserError, "Zone parsing error: parentices expected in SOA record.\n#{@content}" if (rdata[2] != '(') || (@tokens.first != ')')
              rdata.delete_at(2)
              @result.options[:support_email] = rdata[1]
              @result.options[:serial] = rdata[2]
@@ -67,7 +68,7 @@ module Bind9mgr
       @content = str # for debugging
       @tokens = tokenize( str )
       
-      puts @tokens.inspect
+#      puts @tokens.inspect
 
       cntr = 0
       while @tokens.size > 0
@@ -98,34 +99,40 @@ module Bind9mgr
     private
 
     def tokenize str
+      str.gsub!(/;.*$/, '')
       str.squeeze!("\n\t\r")
-      dirty_tokens = str.gsub(/;.*$/, '').split(/[ \t\r]/)
-
-      puts dirty_tokens.inspect
-
+      dirty_tokens = str.split(/[ \t\r]/)
+      
       tokens = []
       dirty_tokens.each do |t|
 
         if t.index("\n")
-          puts "n found: #{t.inspect}"
+#          puts "n found: #{t.inspect}"
           while t.index("\n") do
             i = t.index("\n")-1
-            puts "slice: #{i}, #{t.slice(0..(i >= 0 ? i : 0))}"
+#            puts "slice: #{i}, #{t.slice(0..(i >= 0 ? i : 0))}"
             tokens << t.slice!(0..i) if i >= 0
-            puts "after slice: #{t.inspect}"
-            tokens << "\n"
-            puts "cut:" + t.slice!(0..0).inspect
+#            puts "after slice: #{t.inspect}"
+            tokens << "\n"            
+#            puts "cut:" + t.slice(0..0).inspect
+            t.slice!(0..0)
           end
-          puts "add after cut:#{t.inspect}"
+#          puts "add after cut:#{t.inspect}"
           tokens << t
         else
-          puts "just add:#{t}"
+#          puts "just add:#{t}"
           tokens << t
         end
 
       end
 
-      tokens.select{|s|s.length > 0}
+      tokens.select!{|s|s.length > 0}
+
+      if tokens[0] == "\n"
+        tokens.shift
+      end
+
+      tokens
     end
 
     def get_options
