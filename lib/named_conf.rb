@@ -9,9 +9,9 @@ module Bind9mgr
     attr_accessor :file, :main_ns, :secondary_ns, :support_email, :main_server_ip, :bind_location
     attr_reader :zones
 
-    def initialize( file = '' )
-      @file = file
-      @bind_location = File.dirname(file) if file.length > 1
+    def initialize( named_conf_file_name = '' )
+      @file = named_conf_file_name
+      @bind_location = File.dirname(named_conf_file_name) if file.length > 1
       load
     end
 
@@ -29,7 +29,7 @@ module Bind9mgr
     # Tries to load data from named conf. Do nothing if file missing.
     def load
       init_zones
-      parse File.read( @file ) if File.exists?(@file)
+      parse File.read( file ) if File.exists?(file)
       zones
     end
 

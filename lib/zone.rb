@@ -193,7 +193,6 @@ zone "#{name}" {
 
     def initialized?
       raise( ArgumentError, "zone not initialized" ) if  @origin.nil?
-      puts "WARNING: @file undefined" unless @file.nil?
     end
     
   end
