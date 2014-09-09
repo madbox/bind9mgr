@@ -164,7 +164,18 @@ zone "#{name}" {
     end
 
     def self.domain_name_syntax_valid( string )
-      ! string.match(/^([\w\d\-]{2,}\.)+(\w{2,})\.?$/).nil?
+      # ! string.match(/^([\w\d\-]{2,}\.)+(\w{2,})\.?$/).nil?
+      # ! string.match(/^(((xn--)?[a-z0-9](-?[a-z0-9]+)*\.)+((xn--[a-z0-9](-?[a-z0-9]+)*)|([a-z]{2,})))?$/).nil?
+      # ! string.match(/^(([^\W_]+\.)*xn--)?[^\W_]+([-.][^\W_]+)*\.[a-z]{2,6}\.?$/).nil?
+
+      # TODO Постараться выразить в одном регулярном выражении
+      if string.match(/^xn--/)
+        ! string.match(/^xn--([a-z0-9](-?[a-z0-9]+)){2,}*\.((xn--[a-z0-9](-?[a-z0-9]+)*)|([a-z]{2,}))?\.?$/).nil?
+      elsif string.match(/(com|net|org|biz|me|pro)$/)
+        ! string.match(/^([\w\d\-]+\.)+(\w{2,})\.?$/).nil?
+      else
+        ! string.match(/^([\w\d\-]{2,}\.)+(\w{2,})\.?$/).nil?
+      end
     end
 
     def valid?

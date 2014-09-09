@@ -86,6 +86,10 @@ alias1  	IN	CNAME	ns
       Bind9mgr::Zone.domain_name_syntax_valid( "11qweqwe.ru" ).should be_true
       Bind9mgr::Zone.domain_name_syntax_valid( "q.r" ).should be_false
       Bind9mgr::Zone.domain_name_syntax_valid( "q.11" ).should be_false
+      Bind9mgr::Zone.domain_name_syntax_valid( "q.me" ).should be_true
+      Bind9mgr::Zone.domain_name_syntax_valid( "xn--d1acufc.xn--p1ai" ).should be_true # домен.рф в punycode
+      Bind9mgr::Zone.domain_name_syntax_valid( "xn--d1acufc.xn--p1ai." ).should be_true
+      Bind9mgr::Zone.domain_name_syntax_valid( "xn--l1a.xn--p1ai" ).should be_false # м.рф в punycode
     end
 
     it "should validate domain name" do
