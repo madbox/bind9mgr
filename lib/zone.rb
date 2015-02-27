@@ -155,10 +155,8 @@ zone "#{name}" {
 
     def ensure_rr record
       raise ArgumentError, "record expected to be Bind9mgr::ResourceRecord" unless record.kind_of? ResourceRecord
-      max_rr_cnt = (record.type == 'NS' ? 2 : 1)
-      cnt = @records.select{ |rr| (rr.owner == record.owner) && (rr.type == record.type) }.count
-      raise RuntimeError, "Multiple rr with same owner+type detected. zone:#{@origin}" if cnt > max_rr_cnt
-      return false if cnt == max_rr_cnt
+      current_record = @records.find{ |rr| (rr.owner == record.owner) && (rr.type == record.type) && (rr.rdata == record.rdata) }
+      return false if current_record
       @records.push record
       true
     end
